@@ -17,14 +17,15 @@ export default {
   effects: {
     //用户登录
     *login({payload:data}, { put, call }){
-      const datas = yield call(usersService.login, data)
+     // const datas = yield call(usersService.login, data)
+     const datas=[]
       for(let key in datas){
          if(key === 'code')
             loginModal.state.isLogin = datas[key] === 0 ? true : false
       } 
 
-      let isLogin = loginModal.state.isLogin
-
+     // let isLogin = loginModal.state.isLogin
+     let isLogin =true;
       //登录成功，跳转
       if(isLogin)
         yield put(routerRedux.push('/users'))

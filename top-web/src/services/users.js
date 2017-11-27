@@ -16,7 +16,15 @@ export function login(data){
     data
   })
 }
-
+export function register(data){
+  // return request(`/api/login`);
+  return request({
+    
+    url: host+'register',
+    method: 'post',
+    data
+  })
+}
 export function upload(data){
 
   return request({

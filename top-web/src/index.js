@@ -1,5 +1,6 @@
 import dva from 'dva';
 import createLoading from 'dva-loading';
+import models from './models';
 import './index.js';
 import './index.css';
 
@@ -10,17 +11,10 @@ const app = dva();
 app.use(createLoading());
 
 // 3. Model
-app.model(require('./models/users'));
-
-app.model(require("./models/createArticle"));
-
-app.model(require("./models/search"));
-
-app.model(require("./models/home"));
-
-app.model(require("./models/login"));
-
-app.model(require("./models/Top"));
+// 3. Model move to router
+models.forEach((m) => {
+    app.model(m);
+  });
 
 // 4. Router
 app.router(require('./router'));

@@ -132,7 +132,8 @@ class AddArticle extends Component{
                 <br/>
                 文章标签 ： <Input  placeholder="文章标签" size='large' onChange={this.onChangeblogTag}/>
                 文章摘要 ： <Input  placeholder="文章摘要" size='large' onChange={this.onChangeblogSummary}/>
-                <RichEdictor  onChange={this.getContent}
+                <br/>
+                文章内容：<RichEdictor  onChange={this.getContent}
                     imgSrc = {this.state.imgSrc}/>
                 <Row>
                      <Input value={this.state.imgSrc} />

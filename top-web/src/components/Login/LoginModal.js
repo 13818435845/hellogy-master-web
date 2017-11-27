@@ -11,18 +11,6 @@ class LoginModal extends React.Component {
       password: ''
     };
   }
-  emitEmpty = () => {
-    this.userNameInput.focus();
-    this.setState({ userName: '' });
-  }
-  onChangeUserName = (e) => {
-    this.setState({ userName: e.target.value });
-  }
-
-  onChangePssword = (e) => {
-    this.setState({ password: e.target.value });
-  }
-
   submit(userName, password) {
     let data = { 'userName': userName, 'password': password, 'remember': 1 }
     let onClickHandler = this.props.onclickHandler
@@ -75,7 +63,8 @@ class LoginModal extends React.Component {
           <Row>
             <Button type="primary" size="large" onClick={() => this.handleOk(userName, password)} >
               Sign in
-                  </Button>
+            </Button>
+            Or <a href="http://localhost:8000/#/register">register now!</a>
             <p>
               <span>Username：guest</span>
               <span>Password：guest</span>

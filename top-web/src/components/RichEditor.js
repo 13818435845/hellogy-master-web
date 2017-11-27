@@ -1,23 +1,30 @@
-import React from "react"
-import Editor from "react-umeditor"
+import React from 'react';
+import { Editor } from 'react-draft-wysiwyg';
+import { Row, Col, Card } from 'antd';
+//import * as Icons from 'images/icons';
+import styles from './RichEditor.less'
+import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
+import draftToMarkdown from 'draftjs-to-markdown';
 
-
+const rawContentState = {"entityMap":{"0":{"type":"IMAGE","mutability":"MUTABLE","data":{"src":"http://i.imgur.com/aMtBIep.png","height":"auto","width":"100%"}}},"blocks":[{"key":"9unl6","text":"","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}},{"key":"95kn","text":" ","type":"atomic","depth":0,"inlineStyleRanges":[],"entityRanges":[{"offset":0,"length":1,"key":0}],"data":{}},{"key":"7rjes","text":"","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}]};
 class richEditor extends React.Component {
-	constructor(props){
+	constructor(props) {
 		super(props);
 		this.state = {
-			content: ""
+			content: "",
+			contentState: rawContentState,
+			editorState: '',
 		}
 	}
-	handleChange(content){
+	handleChange(content) {
 		this.setState({
 			content: content
 		})
 		let onChange = this.props.onChange
-		if(onChange)
+		if (onChange)
 			onChange(content)
 	}
-	getIcons(){
+	getIcons() {
 		var icons = [
 			"source | undo redo | bold italic underline strikethrough fontborder emphasis | ",
 			"paragraph fontfamily fontsize | superscript subscript | ",
@@ -27,24 +34,96 @@ class richEditor extends React.Component {
 		]
 		return icons;
 	}
-	getPlugins(){
+	getPlugins() {
 		return {
-			"image": { 
-				"uploader": { 
-					"name":"file", 
-					"url": "/api/upload" 
-				} 
-			} 
+			"image": {
+				"uploader": {
+					"name": "file",
+					"url": "/api/upload"
+				}
+			}
 		}
 	}
-	render(){
-	    var icons = this.getIcons();
-		var plugins = this.getPlugins();
-		return (<Editor ref="editor" 
-            icons={icons} 
-			value={this.state.content} defaultValue="<p>开始写你的博客吧</p>" 
-			onChange={this.handleChange.bind(this)} 
-			plugins={plugins} />)
+	uploadImageCallBack(file) {
+		return new Promise(
+			(resolve, reject) => {
+				const xhr = new XMLHttpRequest();
+				xhr.open('POST', 'https://api.imgur.com/3/image');
+				xhr.setRequestHeader('Authorization', 'Client-ID XXXXX');
+				const data = new FormData();
+				data.append('image', file);
+				xhr.send(data);
+				xhr.addEventListener('load', () => {
+					const response = JSON.parse(xhr.responseText);
+					resolve(response);
+				});
+				xhr.addEventListener('error', () => {
+					const error = JSON.parse(xhr.responseText);
+					reject(error);
+				});
+			}
+		);
+	}
+	render() {
+		const { content, editorState } = this.state;
+		const Icons = [
+			"source | undo redo | bold italic underline strikethrough fontborder emphasis | ",
+			"paragraph fontfamily fontsize | superscript subscript | ",
+			"forecolor backcolor | removeformat | insertorderedlist insertunorderedlist | selectall | ",
+			"cleardoc  | indent outdent | justifyleft justifycenter justifyright | touppercase tolowercase | ",
+			"horizontal date time  | image emotion spechars | inserttable"
+		]
+		return (
+			<div>
+				<Editor
+					toolbarClassName={styles.toolbar}
+					wrapperClassName={styles.wrapper}
+					editorClassName={styles.editor}
+					toolbar={{
+						inline: {
+							bold: { icon: Icons.bold, className: 'demo-option-custom' },
+							italic: { icon: Icons.italic, className: 'demo-option-custom' },
+							underline: { icon: Icons.underline, className: 'demo-option-custom' },
+							strikethrough: { icon: Icons.strikethrough, className: 'demo-option-custom' },
+							monospace: { className: 'demo-option-custom' },
+							superscript: { icon: Icons.superscript, className: 'demo-option-custom' },
+							subscript: { icon: Icons.subscript, className: 'demo-option-custom' },
+						},
+						blockType: { className: 'demo-option-custom-wide', dropdownClassName: 'demo-dropdown-custom' },
+						fontSize: { className: 'demo-option-custom-medium' },
+						list: {
+							unordered: { icon: Icons.unordered, className: 'demo-option-custom' },
+							ordered: { icon: Icons.ordered, className: 'demo-option-custom' },
+							indent: { icon: Icons.indent, className: 'demo-option-custom' },
+							outdent: { icon: Icons.outdent, className: 'demo-option-custom' },
+						},
+						textAlign: {
+							left: { icon: Icons.left, className: 'demo-option-custom' },
+							center: { icon: Icons.center, className: 'demo-option-custom' },
+							right: { icon: Icons.right, className: 'demo-option-custom' },
+							justify: { icon: Icons.justify, className: 'demo-option-custom' },
+						},
+						fontFamily: { className: 'demo-option-custom-wide', dropdownClassName: 'demo-dropdown-custom' },
+						colorPicker: { className: 'demo-option-custom', popupClassName: 'demo-popup-custom' },
+						link: {
+							popupClassName: 'demo-popup-custom',
+							link: { icon: Icons.link, className: 'demo-option-custom' },
+							unlink: { icon: Icons.unlink, className: 'demo-option-custom' },
+						},
+						emoji: { className: 'demo-option-custom', popupClassName: 'demo-popup-custom' },
+						embedded: { className: 'demo-option-custom', popupClassName: 'demo-popup-custom' },
+						image: { uploadCallback: this.uploadImageCallBack, alt: { present: true, mandatory: true } },
+						remove: { icon: Icons.eraser, className: 'demo-option-custom' },
+						history: {
+							undo: { icon: Icons.undo, className: 'demo-option-custom' },
+							redo: { icon: Icons.redo, className: 'demo-option-custom' },
+						},
+					}}
+				/>
+				<Card title="同步转换MarkDown" bordered={false}>
+					<pre style={{ whiteSpace: 'pre-wrap' }}>{draftToMarkdown(content)}</pre>
+				</Card>
+			</div>)
 	}
 }
 export default richEditor
