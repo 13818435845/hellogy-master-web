@@ -64,7 +64,7 @@ class LoginModal extends React.Component {
             <Button type="primary" size="large" onClick={() => this.handleOk(userName, password)} >
               Sign in
             </Button>
-            Or <a href="http://localhost:8000/#/register">register now!</a>
+            Or <a href="http://localhost:8002/#/register">register now!</a>
             <p>
               <span>Username：guest</span>
               <span>Password：guest</span>

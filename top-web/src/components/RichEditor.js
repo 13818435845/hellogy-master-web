@@ -8,15 +8,14 @@ import draftToMarkdown from 'draftjs-to-markdown';
 
 const rawContentState = {"entityMap":{"0":{"type":"IMAGE","mutability":"MUTABLE","data":{"src":"http://i.imgur.com/aMtBIep.png","height":"auto","width":"100%"}}},"blocks":[{"key":"9unl6","text":"","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}},{"key":"95kn","text":" ","type":"atomic","depth":0,"inlineStyleRanges":[],"entityRanges":[{"offset":0,"length":1,"key":0}],"data":{}},{"key":"7rjes","text":"","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}]};
 class richEditor extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
+	
+		state = {
 			content: "",
 			contentState: rawContentState,
 			editorState: '',
 		}
-	}
-	handleChange(content) {
+	
+	handleChange=(content) =>{
 		this.setState({
 			content: content
 		})
@@ -79,6 +78,7 @@ class richEditor extends React.Component {
 					toolbarClassName={styles.toolbar}
 					wrapperClassName={styles.wrapper}
 					editorClassName={styles.editor}
+					onContentStateChange={this.handleChange}
 					toolbar={{
 						inline: {
 							bold: { icon: Icons.bold, className: 'demo-option-custom' },
@@ -121,7 +121,7 @@ class richEditor extends React.Component {
 					}}
 				/>
 				<Card title="同步转换MarkDown" bordered={false}>
-					<pre style={{ whiteSpace: 'pre-wrap' }}>{draftToMarkdown(content)}</pre>
+				<pre style={{whiteSpace: 'pre-wrap'}}>{draftToMarkdown(content)}</pre>
 				</Card>
 			</div>)
 	}

@@ -13,7 +13,12 @@ import LoadArticle from "./routes/LoadArticle.js";
 import App from './routes/App'
 
 function RouterConfig({ history }) {
-  console.log(history);
+ const requireAuth = (permission, component) => {
+    const { store } = this.props;
+    const { auth } = store.getState().httpData;
+    if (!auth || !auth.data.permissions.includes(permission)) hashHistory.replace('/404');
+    return component;
+};
   return (
     <Router history={history}>
       <Route component={App}>
